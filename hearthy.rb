@@ -14,44 +14,58 @@ bot = Cinch::Bot.new do
 
   helpers do
     def hs(m, query)
+      id = CGI.escape(query)
       # get the id
-      url = "http://hearthhead.com/search?q=#{CGI.escape(query)}"
-      debug url
-      id = Net::HTTP.get_response(URI.parse(url))['location'].match('\d+$')
-      debug id
+      #url = "http://hearthhead.com/search?q=#{CGI.escape(query)}"
+      #debug url
+      #id = Net::HTTP.get_response(URI.parse(url))['location'].match('\d+$')
+      debug "Card id is #{id}"
 
       # get the tooltip
       url = "http://hearthhead.com/card=#{id.to_s}&power"
       debug url
       tooltip = Nokogiri::HTML(open(url))
 
-      # name
-      name = tooltip.at_css(".q").content
-      debug name
-      
-      # type
-      type = tooltip.at_css("th").content
-      debug type
+      begin #extract name and type
+        # name
+        name = tooltip.at_css(".q").content
+        debug name
+        
+        # type
+        type = tooltip.at_css("th").content
+        debug type
 
-      # cost
-      cost = tooltip.at_css(".hearthstone-cost").content
-      debug cost
+        m.reply Format(:bold, "%s - #{type}" % [Format(:bold, :yellow, name)])
+      rescue
+        debug "Something wrong with name or type"
+      end
 
-      # attack
-      attack = tooltip.at_css(".hearthstone-attack").content
-      debug attack
+      begin
+        # cost
+        mana = tooltip.at_css(".hearthstone-cost").content
+        debug mana
 
-      # health
-      health = tooltip.at_css(".hearthstone-health").content
-      debug health
+        # attack
+        attack = tooltip.at_css(".hearthstone-attack").content
+        debug attack
 
-      # description
-      desc = tooltip.at_css(".hearthstone-desc").content.to_s
-      debug desc
+        # health
+        health = tooltip.at_css(".hearthstone-health").content
+        debug health
 
-      m.reply "#{name} - #{type} (#{cost} mana, #{attack} attack, #{health} health)"
-      m.reply desc
+        # ability
+        ability = tooltip.at_css(".hearthstone-desc .q2").content
+        debug ability
 
+        # flavor
+        flavor = tooltip.at_css(".hearthstone-desc .q").content
+        debug flavor
+
+        m.reply Format(:bold, "M:#{mana} A:#{attack} H:#{health}")
+        m.reply Format(:lime, "#{ability}")
+      rescue
+        debug "Something went wrong..."
+      end
     rescue
       m.reply "\001ACTION heeft niets kunnen vinden\001"
     else
