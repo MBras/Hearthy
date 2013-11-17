@@ -1,9 +1,5 @@
 require 'cinch'
-require 'open-uri'
-require 'rubygems'
-require 'nokogiri'
-require 'cgi'
-require 'net/http'
+require 'csv'
 
 bot = Cinch::Bot.new do
   configure do |c|
@@ -14,17 +10,29 @@ bot = Cinch::Bot.new do
 
   helpers do
     def hs(m, query)
-      id = CGI.escape(query)
-      # get the id
-      #url = "http://hearthhead.com/search?q=#{CGI.escape(query)}"
-      #debug url
-      #id = Net::HTTP.get_response(URI.parse(url))['location'].match('\d+$')
-      debug "Card id is #{id}"
+      # dit moet nog globaler geladen worden XXX
+      # cards obtained from http://hearthstonecardlist.com/
+      # not complete, e.g. ironfur grizzly is missing
+      # open the cards csv file for reading while maintaining column headers and converting numeric values
+      cards = CSV.read('cards.csv', :headers => true, :converters=>:numeric)
+    
+      # search for all instances of query in the Name column
+      found_cards = Array.new
+      cards.each { |card|
+        if (card["Name"].downcase[query.downcase] != nil) then 
+          found_cards.push(card)
+        end
+      }      
 
-      # get the tooltip
-      url = "http://hearthhead.com/card=#{id.to_s}&power"
-      debug url
-      tooltip = Nokogiri::HTML(open(url))
+      # act depending on the number of found cards
+      case found_cards.length
+      when 0
+        m.reply "\001ACTION heeft niets kunnen vinden :/\001"
+      when 1
+        m.reply "1 match gevonden"
+      else
+        m.reply "#{found_cards.length} kaarten gevonden"
+      end
 
       begin #extract name and type
         # name
@@ -74,7 +82,7 @@ bot = Cinch::Bot.new do
   end
 
   on :message, /\[(.+)\]/ do |m, query|
-    #m.reply "\001ACTION is op zoek naar #{query}\001"
+    m.reply "\001ACTION is op zoek naar #{query}\001"
     hs(m, query)
   end
 
