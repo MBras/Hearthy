@@ -29,29 +29,18 @@ bot = Cinch::Bot.new do
       when 0
         m.reply "\001ACTION heeft niets kunnen vinden :/\001"
       when 1
-        m.reply "1 match gevonden"
+        p found_cards[0]
+        card = found_cards[0]
+        m.reply Format(:bold, "%s - #{card["Type"]}" % [Format(:yellow, card["Name"])])
+
       else
         # stick all cardnames together
         card_array = Array.new
-        found_cards.each { |card| card_array.push("["+card["Name"]+"]") }
+        found_cards.each { |card| card_array.push("[" + card["Name"] + "]") }
         card_array_string = card_array.join(", ")
 
         # and print them
         m.reply "\001ACTION heeft #{found_cards.length} kaarten gevonden: #{card_array_string}"
-      end
-
-      begin #extract name and type
-        # name
-        name = tooltip.at_css(".q").content
-        debug name
-        
-        # type
-        type = tooltip.at_css("th").content
-        debug type
-
-        m.reply Format(:bold, "%s - #{type}" % [Format(:bold, :yellow, name)])
-      rescue
-        debug "Something wrong with name or type"
       end
 
       begin
@@ -88,7 +77,7 @@ bot = Cinch::Bot.new do
   end
 
   on :message, /\[(.+)\]/ do |m, query|
-    m.reply "\001ACTION is op zoek naar #{query}\001"
+    m.reply "\001ACTION zoekt naar [#{query}]\001"
     hs(m, query)
   end
 
