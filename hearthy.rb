@@ -31,7 +31,13 @@ bot = Cinch::Bot.new do
       when 1
         m.reply "1 match gevonden"
       else
-        m.reply "#{found_cards.length} kaarten gevonden"
+        # stick all cardnames together
+        card_array = Array.new
+        found_cards.each { |card| card_array.push("["+card["Name"]+"]") }
+        card_array_string = card_array.join(", ")
+
+        # and print them
+        m.reply "\001ACTION heeft #{found_cards.length} kaarten gevonden: #{card_array_string}"
       end
 
       begin #extract name and type
