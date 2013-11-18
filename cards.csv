@@ -1,5 +1,6 @@
 Name,Class,Rarity,Type,Race,Mana,Attack,Health,Description
 Uther Lightbringer,Paladin,Basic,Hero,,,,30,Hero Power: Summon a 1/1 Silver Hand Recruit
+Jaina Proudmoore,Mage,Basic,Hero,,,,30,Hero Power: Deal 1 damage.
 Leeroy Jenkins,All,Legendary,Elite Minion,,4,6,2,Charge. Battlecry: Summon two 1/1 Whelps for your opponent.
 Ironfur Grizzly,All,Common,Minion,Beast,3,3,3,Taunt
 Lord Jaraxxus,Warlock,Legendary,Minion,Demon,9,3,15,Battlecry: Destroy your hero and replace him with Lord Jaraxxus.
