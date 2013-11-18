@@ -10,7 +10,18 @@ bot = Cinch::Bot.new do
 
   helpers do
     def hs(m, query)
-      # dit moet nog globaler geladen worden XXX
+      colors = Hash.new
+      colors["Druid"] = :orange
+      colors["Mage"] = :royal
+      colors["Warlock"] = :purple
+      colors["Shaman"] = :blue
+      colors["Warrior"] = :red
+      colors["Priest"] = :white
+      colors["Rogue"] = :yellow
+      colors["Hunter"] = :green
+      colors["Paladin"] = :pink
+      
+      # I should perhaps load the list once instead of every query XXX
       # cards obtained from http://hearthstonecardlist.com/
       # not complete, e.g. ironfur grizzly is missing
       # open the cards csv file for reading while maintaining column headers and converting numeric values
@@ -28,12 +39,30 @@ bot = Cinch::Bot.new do
       case found_cards.length
       when 0
         m.reply "\001ACTION heeft niets kunnen vinden :/\001"
-      when 1
+      when 1 # one card found
         p found_cards[0]
         card = found_cards[0]
+
+        # first line - name type
         m.reply Format(:bold, "%s - #{card["Type"]}" % [Format(:yellow, card["Name"])])
 
-      else
+        # race if applicable
+        m.reply Format(:bold, "#{card["Race"]}") if card["Race"] != nil
+
+        # class if applicable
+        if card["Class"] != nil and card["Class"] != "All" then 
+          m.reply Format(colors[card["Class"]], "#{card["Class"]}")
+        end
+
+        # mana and if available, attack and health
+        reply = "M:#{card["Mana"]}"
+        reply += " A:#{card["Attack"]}" if card["Attack"] != nil
+        reply += " H:#{card["Health"]}" if card["Health"] != nil
+        m.reply Format(:bold, reply)
+
+        # description if applicable
+        m.reply Format(:lime, "#{card["Description"]}") if card["Description"] != nil
+      else # when multiple cards look like the search query
         # stick all cardnames together
         card_array = Array.new
         found_cards.each { |card| card_array.push("[" + card["Name"] + "]") }
@@ -42,37 +71,6 @@ bot = Cinch::Bot.new do
         # and print them
         m.reply "\001ACTION heeft #{found_cards.length} kaarten gevonden: #{card_array_string}"
       end
-
-      begin
-        # cost
-        mana = tooltip.at_css(".hearthstone-cost").content
-        debug mana
-
-        # attack
-        attack = tooltip.at_css(".hearthstone-attack").content
-        debug attack
-
-        # health
-        health = tooltip.at_css(".hearthstone-health").content
-        debug health
-
-        # ability
-        ability = tooltip.at_css(".hearthstone-desc .q2").content
-        debug ability
-
-        # flavor
-        flavor = tooltip.at_css(".hearthstone-desc .q").content
-        debug flavor
-
-        m.reply Format(:bold, "M:#{mana} A:#{attack} H:#{health}")
-        m.reply Format(:lime, "#{ability}")
-      rescue
-        debug "Something went wrong..."
-      end
-    rescue
-      m.reply "\001ACTION heeft niets kunnen vinden\001"
-    else
-      CGI.unescape_html "Gevonden: #{title}"
     end
   end
 
