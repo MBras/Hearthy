@@ -57,9 +57,10 @@ bot = Cinch::Bot.new do
         m.reply Format(:bold, reply)
         
         # mana and if available, attack and health
-        reply = "M:#{card["Mana"]}"
-        reply += " A:#{card["Attack"]}" if card["Attack"] != nil
-        reply += " H:#{card["Health"]}" if card["Health"] != nil
+        reply = ""
+        reply += "M:#{card["Mana"]} " if card["Mana"] != nil
+        reply += "A:#{card["Attack"]} " if card["Attack"] != nil
+        reply += "H:#{card["Health"]}" if card["Health"] != nil
         m.reply Format(:bold, reply)
         
         # description if applicable
