@@ -1,4 +1,6 @@
 Name,Class,Rarity,Type,Race,Mana,Attack,Health,Description
+Leeroy Jenkins,All,Legendary,Elite Minion,,4,6,2,Charge. Battlecry: Summon two 1/1 Whelps for your opponent.
+Ironfur Grizzly,All,Common,Minion,Beast,3,3,3,Taunt
 Lord Jaraxxus,Warlock,Legendary,Minion,Demon,9,3,15,Battlecry: Destroy your hero and replace him with Lord Jaraxxus.
 Deathwing,All,Legendary,Minion,Dragon,10,12,12,Battlecry: Destroy all other minions and discard your hand.
 Malygos,All,Legendary,Minion,Dragon,9,4,12,Spell Power +5

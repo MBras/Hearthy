@@ -5,7 +5,7 @@ bot = Cinch::Bot.new do
   configure do |c|
     c.nick            = "Hearthy"  
     c.server          = "irc.sandcat.nl"
-    c.channels        = ["#hstest"]
+    c.channels        = ["#hs"]
   end
 
   helpers do
@@ -38,7 +38,7 @@ bot = Cinch::Bot.new do
       # act depending on the number of found cards
       case found_cards.length
       when 0
-        m.reply "\001ACTION heeft niets kunnen vinden :/\001"
+        m.reply "\001ACTION heeft niets kunnen vinden voor [#{query}] :/\001"
       when 1 # one card found
         p found_cards[0]
         card = found_cards[0]
@@ -75,7 +75,7 @@ bot = Cinch::Bot.new do
   end
 
   on :message, /\[(.+)\]/ do |m, query|
-    m.reply "\001ACTION zoekt naar [#{query}]\001"
+    #m.reply "\001ACTION zoekt naar [#{query}]\001"
     hs(m, query)
   end
 
