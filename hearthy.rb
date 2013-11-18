@@ -10,6 +10,7 @@ bot = Cinch::Bot.new do
 
   helpers do
     def hs(m, query)
+      #  http://rubydoc.info/gems/cinch/Cinch/Formatting     
       colors = Hash.new
       colors["Druid"] = :orange
       colors["Mage"] = :royal
@@ -20,10 +21,14 @@ bot = Cinch::Bot.new do
       colors["Rogue"] = :yellow
       colors["Hunter"] = :green
       colors["Paladin"] = :pink
+      colors["Epic"] = :purple
+      colors["Legendary"] = :orange
+      colors["Rare"] = :blue
+      colors["Common"] = :white
+      colors["Basic"] = :white
       
       # I should perhaps load the list once instead of every query XXX
       # cards obtained from http://hearthstonecardlist.com/
-      # not complete, e.g. ironfur grizzly is missing
       # open the cards csv file for reading while maintaining column headers and converting numeric values
       cards = CSV.read('cards.csv', :headers => true, :converters=>:numeric)
     
@@ -43,25 +48,23 @@ bot = Cinch::Bot.new do
         p found_cards[0]
         card = found_cards[0]
 
-        # first line - name type
-        m.reply Format(:bold, "%s - #{card["Type"]}" % [Format(:yellow, card["Name"])])
-
-        # race if applicable
-        m.reply Format(:bold, "#{card["Race"]}") if card["Race"] != nil
-
-        # class if applicable
+        # first line: name - type - (race) - class
+        reply = Format("%s - #{card["Type"]}" % [Format(colors[card["Rarity"]], card["Name"])])
+        reply += " (#{card["Race"]})" if card["Race"] != nil
         if card["Class"] != nil and card["Class"] != "All" then 
-          m.reply Format(colors[card["Class"]], "#{card["Class"]}")
+          reply += Format(colors[card["Class"]], " - #{card["Class"]}")
         end
-
+        m.reply Format(:bold, reply)
+        
         # mana and if available, attack and health
         reply = "M:#{card["Mana"]}"
         reply += " A:#{card["Attack"]}" if card["Attack"] != nil
         reply += " H:#{card["Health"]}" if card["Health"] != nil
         m.reply Format(:bold, reply)
-
+        
         # description if applicable
         m.reply Format(:lime, "#{card["Description"]}") if card["Description"] != nil
+      
       else # when multiple cards look like the search query
         # stick all cardnames together
         card_array = Array.new
