@@ -30,7 +30,7 @@ bot = Cinch::Bot.new do
       # I should perhaps load the list once instead of every query XXX
       # cards obtained from http://hearthstonecardlist.com/
       # open the cards csv file for reading while maintaining column headers and converting numeric values
-      cards = CSV.read('cards.csv', :headers => true, :converters=>:numeric)
+      cards = CSV.read('cards.csv', :headers => true, :converters=>:numeric, :encoding =>"UTF-8")
     
       # search for all instances of query in the Name column
       found_cards = Array.new
