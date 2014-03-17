@@ -9,6 +9,26 @@ bot = Cinch::Bot.new do
   end
 
   helpers do
+    def reply_card(m, card, colors)
+        # first line: name - type - (race) - class
+        reply = Format("%s - #{card["Type"]}" % [Format(colors[card["Rarity"]], card["Name"])])
+        reply += " (#{card["Race"]})" if card["Race"] != nil
+        if card["Class"] != nil and card["Class"] != "All" then 
+          reply += Format(colors[card["Class"]], " - #{card["Class"]}")
+        end
+        m.reply Format(:bold, reply)
+        
+        # mana and if available, attack and health
+        reply = ""
+        reply += "M:#{card["Mana"]} " if card["Mana"] != nil
+        reply += "A:#{card["Attack"]} " if card["Attack"] != nil
+        reply += "H:#{card["Health"]}" if card["Health"] != nil
+        m.reply Format(:bold, reply)
+        
+        # description if applicable
+        m.reply Format(:lime, "#{card["Description"]}") if card["Description"] != nil
+    end
+
     def hs(m, query)
       #  http://rubydoc.info/gems/cinch/Cinch/Formatting     
       colors = Hash.new
@@ -48,29 +68,17 @@ bot = Cinch::Bot.new do
         p found_cards[0]
         card = found_cards[0]
 
-        # first line: name - type - (race) - class
-        reply = Format("%s - #{card["Type"]}" % [Format(colors[card["Rarity"]], card["Name"])])
-        reply += " (#{card["Race"]})" if card["Race"] != nil
-        if card["Class"] != nil and card["Class"] != "All" then 
-          reply += Format(colors[card["Class"]], " - #{card["Class"]}")
-        end
-        m.reply Format(:bold, reply)
-        
-        # mana and if available, attack and health
-        reply = ""
-        reply += "M:#{card["Mana"]} " if card["Mana"] != nil
-        reply += "A:#{card["Attack"]} " if card["Attack"] != nil
-        reply += "H:#{card["Health"]}" if card["Health"] != nil
-        m.reply Format(:bold, reply)
-        
-        # description if applicable
-        m.reply Format(:lime, "#{card["Description"]}") if card["Description"] != nil
+        reply_card(m, card, colors)
       
       else # when multiple cards look like the search query
         # stick all cardnames together
         card_array = Array.new
         found_cards.each { |card| card_array.push("[" + card["Name"] + "]") }
         card_array_string = card_array.join(", ")
+
+        card = found_cards.select{ |c| c["Name"].downcase == query.downcase }[0]
+
+        reply_card(m, card, colors) unless card.nil?
 
         # and print them
         m.reply "\001ACTION heeft #{found_cards.length} kaarten gevonden: #{card_array_string}"
